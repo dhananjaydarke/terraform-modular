@@ -27,14 +27,14 @@ data "aws_iam_policy_document" "assume" {
 
 data "aws_iam_policy_document" "policy" {
   statement {
-    effect = "Allow"
-    actions = ["ecs:RunTask", "ecs:DescribeTasks"]
+    effect    = "Allow"
+    actions   = ["ecs:RunTask", "ecs:DescribeTasks"]
     resources = [var.task_definition_arn]
   }
 
   statement {
-    effect = "Allow"
-    actions = ["iam:PassRole"]
+    effect    = "Allow"
+    actions   = ["iam:PassRole"]
     resources = var.pass_role_arns
   }
 }

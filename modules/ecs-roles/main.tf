@@ -21,7 +21,7 @@ data "aws_iam_policy_document" "task_execution_assume" {
 resource "aws_iam_role" "task_execution" {
   name               = "${var.name}-task-execution"
   assume_role_policy = data.aws_iam_policy_document.task_execution_assume.json
-  tags = merge(var.tags, { Name = "${var.name}-task-execution" })
+  tags               = merge(var.tags, { Name = "${var.name}-task-execution" })
 }
 
 resource "aws_iam_role_policy_attachment" "execution_managed" {
@@ -32,7 +32,7 @@ resource "aws_iam_role_policy_attachment" "execution_managed" {
 resource "aws_iam_role" "task" {
   name               = "${var.name}-task"
   assume_role_policy = data.aws_iam_policy_document.task_execution_assume.json
-  tags = merge(var.tags, { Name = "${var.name}-task" })
+  tags               = merge(var.tags, { Name = "${var.name}-task" })
 }
 
 resource "aws_iam_role_policy" "task_inline" {

@@ -29,13 +29,13 @@ resource "aws_s3_bucket_public_access_block" "this" {
 }
 
 resource "aws_cloudfront_origin_access_control" "this" {
-  name                              = "${var.bucket_name}-oac"
-  description                       = "OAC for ${var.bucket_name}"
-  signing_behavior                  = "always"
-  signing_protocol                  = "sigv4"
-  origin_type                       = "s3"
-  enforce_signed_origin_access      = true
-  origin_resource                   = aws_s3_bucket.this.arn
+  name                         = "${var.bucket_name}-oac"
+  description                  = "OAC for ${var.bucket_name}"
+  signing_behavior             = "always"
+  signing_protocol             = "sigv4"
+  origin_type                  = "s3"
+  enforce_signed_origin_access = true
+//  origin_resource              = aws_s3_bucket.this.arn
 }
 
 resource "aws_s3_bucket_policy" "this" {
