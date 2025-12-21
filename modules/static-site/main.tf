@@ -29,13 +29,11 @@ resource "aws_s3_bucket_public_access_block" "this" {
 }
 
 resource "aws_cloudfront_origin_access_control" "this" {
-  name                         = "${var.bucket_name}-oac"
-  description                  = "OAC for ${var.bucket_name}"
-  signing_behavior             = "always"
-  signing_protocol             = "sigv4"
-  origin_type                  = "s3"
-  enforce_signed_origin_access = true
-//  origin_resource              = aws_s3_bucket.this.arn
+  name                              = "${var.bucket_name}-oac"
+  description                       = "OAC for ${var.bucket_name}"
+  signing_behavior                  = "always"
+  signing_protocol                  = "sigv4"
+  origin_access_control_origin_type = "s3"
 }
 
 resource "aws_s3_bucket_policy" "this" {
@@ -64,7 +62,7 @@ resource "aws_cloudfront_distribution" "this" {
   enabled             = true
   default_root_object = var.default_root_object
 
-  origins {
+  origin {
     domain_name              = aws_s3_bucket.this.bucket_regional_domain_name
     origin_id                = "s3-origin"
     origin_access_control_id = aws_cloudfront_origin_access_control.this.id
@@ -110,4 +108,9 @@ output "bucket_name" {
 output "distribution_domain" {
   value       = aws_cloudfront_distribution.this.domain_name
   description = "CloudFront domain name"
+}
+
+output "distribution_id" {
+  value       = aws_cloudfront_distribution.this.id
+  description = "CloudFront distribution ID"
 }

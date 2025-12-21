@@ -1,0 +1,21 @@
+version: 0.2
+env:
+  variables:
+    IMAGE_TAG: "latest"
+phases:
+  pre_build:
+    commands:
+      - aws --version
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin ${ECR_REPO_URL%
+}
+  build:
+    commands:
+      - echo Build started on `date`
+      - docker build -t $ECR_REPO_URL:$IMAGE_TAG .
+  post_build:
+    commands:
+      - echo Pushing the Docker image...
+      - docker push $ECR_REPO_URL:$IMAGE_TAG
+artifacts:
+  files: []
