@@ -27,3 +27,12 @@ output "frontend_domain" {
   value       = module.static_site.distribution_domain
   description = "CloudFront distribution domain"
 }
+output "db_endpoint" {
+  value       = module.rds.endpoint
+  description = "RDS endpoint"
+}
+
+output "db_port" {
+  value       = module.rds.port
+  description = "RDS port"
+}

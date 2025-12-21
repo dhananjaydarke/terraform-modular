@@ -28,35 +28,90 @@ variable "backend_port" {
   default     = 8080
 }
 
-variable "db_host" {
-  description = "Database endpoint"
-  type        = string
-}
-
 variable "db_port" {
   description = "Database port"
   type        = number
   default     = 5432
 }
 
-variable "db_name" {
-  description = "Database name"
-  type        = string
-}
-
 variable "db_user" {
-  description = "Database user"
+  description = "Master username"
   type        = string
+  default     = "students_admin"
 }
 
 variable "db_password" {
-  description = "Database password"
+  description = "Master password"
   type        = string
   sensitive   = true
+  default     = "students_admin123$"
+}
+
+variable "db_name" {
+  description = "Initial database name"
+  type        = string
+  default     = "StudentsDB"
+}
+
+variable "port" {
+  description = "Database port"
+  type        = number
+  default     = 5432
+}
+variable "db_engine_version" {
+  description = "Database engine version"
+  type        = string
+  default     = "14"
+}
+
+variable "db_instance_class" {
+  description = "RDS instance class"
+  type        = string
+  default     = "db.t3.micro"
+}
+
+variable "db_allocated_storage" {
+  description = "RDS allocated storage (GB)"
+  type        = number
+  default     = 20
 }
 
 variable "db_fetch_image" {
   description = "Image URI for the DB fetch/task runner"
   type        = string
   default     = "mcr.microsoft.com/mssql-tools"
+}
+
+variable "db_engine" {
+  description = "Database engine"
+  type        = string
+  default     = "postgres"
+}
+
+variable "backend_github_repo" {
+  description = "GitHub HTTPS URL for backend source"
+  type        = string
+}
+
+variable "backend_github_branch" {
+  description = "Backend branch"
+  type        = string
+  default     = "main"
+}
+
+variable "frontend_github_repo" {
+  description = "GitHub HTTPS URL for frontend source"
+  type        = string
+}
+
+variable "frontend_github_branch" {
+  description = "Frontend branch"
+  type        = string
+  default     = "main"
+}
+
+variable "frontend_api_base_url" {
+  description = "API base URL to inject at frontend build time"
+  type        = string
+  default     = "http://localhost:8080/api"
 }
