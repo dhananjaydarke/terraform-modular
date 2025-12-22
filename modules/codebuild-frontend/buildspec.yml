@@ -19,10 +19,3 @@ phases:
       - if [ -n "$DISTRIBUTION_ID" ]; then aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"; fi
 artifacts:
   files: []
-  
-  
-  
-export API_BASE_URL="d1j01lbrwdrrrt.cloudfront.net"
-export DISTRIBUTION_ID="E1SNOQR6V5R4ZU"
-export BUCKET_NAME="students-static-dev"
-  
