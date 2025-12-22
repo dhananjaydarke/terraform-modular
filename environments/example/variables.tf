@@ -91,6 +91,7 @@ variable "db_engine" {
 variable "backend_github_repo" {
   description = "GitHub HTTPS URL for backend source"
   type        = string
+  default     = "https://github.com/dhananjaydarke/terraform-modular/tree/main/backend-app"
 }
 
 variable "backend_github_branch" {
@@ -102,6 +103,7 @@ variable "backend_github_branch" {
 variable "frontend_github_repo" {
   description = "GitHub HTTPS URL for frontend source"
   type        = string
+  default     = "https://github.com/dhananjaydarke/terraform-modular/tree/main/frontend-app"
 }
 
 variable "frontend_github_branch" {

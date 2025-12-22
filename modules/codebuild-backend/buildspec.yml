@@ -2,12 +2,13 @@ version: 0.2
 env:
   variables:
     IMAGE_TAG: "latest"
+    ECR_REPO_URL: "437147519305.dkr.ecr.us-east-1.amazonaws.com/students-backend"
 phases:
   pre_build:
     commands:
       - aws --version
       - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin ${ECR_REPO_URL%
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin ${ECR_REPO_URL}
 }
   build:
     commands:

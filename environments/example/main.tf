@@ -171,7 +171,7 @@ module "codebuild_backend" {
   github_repo   = var.backend_github_repo
   github_branch = var.backend_github_branch
   ecr_repo_url  = module.ecr_backend.repository_url
-  buildspec     = file("${path.module}/../modules/codebuild-backend/buildspec.yml")
+  buildspec     = "../../modules/codebuild-backend/buildspec.yml"
   tags          = local.common_tags
 }
 
@@ -184,6 +184,6 @@ module "codebuild_frontend" {
   bucket_name                = module.static_site.bucket_name
   cloudfront_distribution_id = module.static_site.distribution_id
   api_base_url               = var.frontend_api_base_url
-  buildspec                  = file("${path.module}/../modules/codebuild-frontend/buildspec.yml")
+  buildspec                  = "../../modules/codebuild-frontend/buildspec.yml"
   tags                       = local.common_tags
 }

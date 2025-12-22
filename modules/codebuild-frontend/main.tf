@@ -101,15 +101,15 @@ resource "aws_codebuild_project" "this" {
     buildspec       = var.buildspec != "" ? var.buildspec : null
     git_clone_depth = 1
   }
-
+/*
   dynamic "source_version" {
     for_each = var.github_branch != "" ? [var.github_branch] : []
     content  = source_version.value
   }
-
-  tags = merge(var.tags, { Name = var.name })
+*/
+  source_version = var.github_branch
+  tags = merge(var.tags, { Name = var.name })  
 }
-
 output "project_name" {
   value       = aws_codebuild_project.this.name
   description = "CodeBuild project name"
