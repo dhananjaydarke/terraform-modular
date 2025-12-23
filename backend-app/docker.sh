@@ -1,6 +1,7 @@
 #!/bin/bash
 
 
+export AWS_DEFAULT_REGION="us-east-1"
 export IMAGE_TAG="latest"
 export ECR_REPO_URL="437147519305.dkr.ecr.us-east-1.amazonaws.com/students-backend"
 aws ecr create-repository --repository-name students-backend || true
