@@ -60,3 +60,15 @@ variable "db_fetch_image" {
   type        = string
   default     = "mcr.microsoft.com/mssql-tools"
 }
+
+variable "private_api_stage_name" {
+  description = "Stage name for the private API Gateway"
+  type        = string
+  default     = "v1"
+}
+
+variable "private_hosted_zone_name" {
+  description = "Private hosted zone name for internal DNS"
+  type        = string
+  default     = "internal.local"
+}

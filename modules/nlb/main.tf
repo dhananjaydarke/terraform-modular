@@ -61,6 +61,11 @@ output "lb_dns_name" {
   description = "Load balancer DNS name"
 }
 
+output "lb_zone_id" {
+  value       = aws_lb.this.zone_id
+  description = "Load balancer zone ID"
+}
+
 output "target_group_arn" {
   value       = aws_lb_target_group.this.arn
   description = "Target group ARN"

@@ -88,15 +88,17 @@ resource "aws_route_table_association" "public" {
 }
 
 resource "aws_route_table" "private" {
+  count = var.az_count
+
   vpc_id = aws_vpc.this.id
   tags = merge(var.tags, {
-    Name = "${var.name}-private-rt"
+    Name = "${var.name}-private-${count.index + 1}-rt"
   })
 }
 
 resource "aws_route" "private_outbound" {
   count                  = var.az_count
-  route_table_id         = aws_route_table.private.id
+  route_table_id         = aws_route_table.private[count.index].id
   destination_cidr_block = "0.0.0.0/0"
   nat_gateway_id         = aws_nat_gateway.this[count.index].id
 }
@@ -104,7 +106,7 @@ resource "aws_route" "private_outbound" {
 resource "aws_route_table_association" "private" {
   count          = length(aws_subnet.private)
   subnet_id      = aws_subnet.private[count.index].id
-  route_table_id = aws_route_table.private.id
+  route_table_id = aws_route_table.private[count.index].id
 }
 
 output "vpc_id" {
