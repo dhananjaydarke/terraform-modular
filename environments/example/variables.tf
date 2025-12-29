@@ -56,7 +56,7 @@ variable "db_name" {
 variable "db_engine_version" {
   description = "Database engine version"
   type        = string
-  default     = "14"
+  default     = "16.00.4215.2.v1"
 }
 
 variable "db_instance_class" {
@@ -78,11 +78,10 @@ variable "db_fetch_image" {
 }
 
 variable "db_engine" {
-  description = "Database engine"
+  description = "Database engine (e.g., postgres, mysql)"
   type        = string
-  default     = "postgres"
+  default     = "sqlserver-ex"
 }
-
 variable "backend_github_repo" {
   description = "GitHub HTTPS URL for backend source"
   type        = string

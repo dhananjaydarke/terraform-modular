@@ -6,13 +6,13 @@ variable "name" {
 variable "engine" {
   description = "Database engine (e.g., postgres, mysql)"
   type        = string
-  default     = "postgres"
+  default     = "sqlserver-ex"
 }
 
 variable "engine_version" {
   description = "Engine version"
   type        = string
-  default     = "14"
+  default     = "16.00.4215.2.v1"
 }
 
 variable "instance_class" {

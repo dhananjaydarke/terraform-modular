@@ -47,7 +47,7 @@ resource "aws_db_instance" "this" {
   allocated_storage       = var.allocated_storage
   username                = var.username
   password                = var.password
-  db_name                 = var.db_name
+  #  db_name                 = var.db_name
   port                    = var.port
   vpc_security_group_ids  = [aws_security_group.this.id]
   db_subnet_group_name    = aws_db_subnet_group.this.name

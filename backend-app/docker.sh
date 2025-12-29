@@ -3,11 +3,25 @@
 
 export AWS_DEFAULT_REGION="us-east-1"
 export IMAGE_TAG="latest"
-export ECR_REPO_URL="437147519305.dkr.ecr.us-east-1.amazonaws.com/students-backend"
-aws ecr create-repository --repository-name students-backend || true
+export REPO_NAME="students-backend"
+export ECR_REPO_URL="437147519305.dkr.ecr.us-east-1.amazonaws.com/${REPO_NAME}"
+
+# Attempt to describe the repository
+if aws ecr describe-repositories --repository-names "${REPO_NAME}" >/dev/null 2>&1; then
+    echo "Repository '${REPO_NAME}' already exists."
+else
+    echo "Repository '${REPO_NAME}' does not exist. Creating it now..."
+    aws ecr create-repository --repository-name "${REPO_NAME}"
+    echo "Repository '${REPO_NAME}' created."
+fi
+
 aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin ${ECR_REPO_URL}
 docker build --platform="linux/amd64" -t $ECR_REPO_URL:$IMAGE_TAG .
 docker push $ECR_REPO_URL:$IMAGE_TAG
+
+
+
+
 
 
 #aws ecs run-task \
