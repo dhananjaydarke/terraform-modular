@@ -31,7 +31,7 @@ variable "backend_port" {
 variable "db_port" {
   description = "Database port"
   type        = number
-  default     = 5432
+  default     = 1433
 }
 
 variable "db_user" {
@@ -53,11 +53,6 @@ variable "db_name" {
   default     = "StudentsDB"
 }
 
-variable "port" {
-  description = "Database port"
-  type        = number
-  default     = 5432
-}
 variable "db_engine_version" {
   description = "Database engine version"
   type        = string
