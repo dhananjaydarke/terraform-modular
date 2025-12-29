@@ -1,0 +1,30 @@
+Deploy steps (frontend + backend + DB)
+Build & push the backend image to ECR
+437147519305.dkr.ecr.us-east-1.amazonaws.com/students-backend
+Repo URL output: backend_repo_url (from environments/example/outputs.tf). It’s created by module.ecr_backend.
+
+From backend-app/: 
+docker build -t backend_repo_url:latest .
+docker push backend_repo_url:latest.
+
+Ensure envs for the task are set via Terraform (already wired in environments/example/main.tf): DB_HOST/DB_PORT/DB_NAME/DB_USER/DB_PASSWORD come from the RDS module outputs; API path is /api; CORS origin can be set with ALLOWED_ORIGIN.
+
+Build the frontend with the correct API base
+
+From frontend-app/: API_BASE_URL="http://<backend-LB-DNS-or-API-gateway-domain>/api" npm run build.
+
+Upload frontend-app/dist/* to the static-site bucket output by Terraform (bucket_name in terraform-modular/modules/static-site/main.tf). Invalidate CloudFront after upload.
+
+Terraform apply
+
+In terraform-modular/environments/example: terraform init, then terraform apply with DB creds:
+-var db_name=... -var db_user=... -var db_password=... (and set db_engine/db_port to match your DB choice, see below).
+
+This brings up VPC, RDS, ECS cluster/service, NLB, CloudFront+S3, etc.
+
+Point the frontend to the backend
+
+If you keep the NLB (TCP) as-is, expose the API via an ALB or API Gateway in front of it and use that DNS for API_BASE_URL. NLB alone won’t terminate HTTP/HTTPS for browsers.
+
+Update API_BASE_URL at build time and redeploy the frontend assets.
+
