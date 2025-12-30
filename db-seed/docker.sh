@@ -1,5 +1,4 @@
 #!/bin/bash
-export AWS_DEFAULT_REGION="us-east-1"
 export IMAGE_TAG="latest"
 export AWS_DEFAULT_REGION="us-east-1"
 export REPO_NAME="students-db-seed"
@@ -27,7 +26,7 @@ aws ecs run-task \
   --cluster "arn:aws:ecs:us-east-1:437147519305:cluster/students-cluster" \
   --launch-type "FARGATE" \
   --task-definition "arn:aws:ecs:us-east-1:437147519305:task-definition/students-db-fetch" \
- --network-configuration "awsvpcConfiguration={subnets=[subnet-019adad7d9aa513f5,subnet-00049970bf2c7e2ba],securityGroups=[sg-09f9c91aeb1a1b078],assignPublicIp=DISABLED}" \
+ --network-configuration "awsvpcConfiguration={subnets=[subnet-0efd13c4fad54937d,subnet-05bb411178a02c282],securityGroups=[sg-0de9d1df266760cde],assignPublicIp=DISABLED}" \
   --overrides 'containerOverrides=[{
     name="db-fetch",
     environment=[
