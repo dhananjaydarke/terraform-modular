@@ -1,10 +1,10 @@
-CREATE TABLE IF NOT EXISTS Students (
-  RollNo INT PRIMARY KEY,
-  Name NVARCHAR(100),
-  Grade NVARCHAR(10),
-  DOB DATE
+CREATE TABLE IF NOT EXISTS students (
+  rollno INT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  grade VARCHAR(10) NOT NULL,
+  dob DATE NOT NULL
 );
-INSERT INTO Students (RollNo, Name, Grade, DOB) VALUES
+INSERT INTO students (rollno, name, grade, dob) VALUES
 (1,'Alice','A','2007-02-14'),
 (2,'Bob','B','2007-05-21'),
 (3,'Charlie','A','2007-08-03'),

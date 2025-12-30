@@ -31,7 +31,7 @@ variable "backend_port" {
 variable "db_port" {
   description = "Database port"
   type        = number
-  default     = 1433
+  default     = 5432
 }
 
 variable "db_user" {
@@ -50,13 +50,13 @@ variable "db_password" {
 variable "db_name" {
   description = "Initial database name"
   type        = string
-  default     = "StudentsDB"
+  default     = "appdb"
 }
 
 variable "db_engine_version" {
   description = "Database engine version"
   type        = string
-  default     = "16.00.4215.2.v1"
+  default     = "16.3"
 }
 
 variable "db_instance_class" {
@@ -74,13 +74,13 @@ variable "db_allocated_storage" {
 variable "db_fetch_image" {
   description = "Image URI for the DB fetch/task runner"
   type        = string
-  default     = "mcr.microsoft.com/mssql-tools"
+  default     = "postgres:16-alpine"
 }
 
 variable "db_engine" {
   description = "Database engine (e.g., postgres, mysql)"
   type        = string
-  default     = "sqlserver-ex"
+  default     = "postgres"
 }
 variable "backend_github_repo" {
   description = "GitHub HTTPS URL for backend source"
