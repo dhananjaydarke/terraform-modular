@@ -5,10 +5,10 @@ export AWS_DEFAULT_REGION="us-east-1"
 export REPO_NAME="students-db-seed"
 export ECR_REPO_URL="437147519305.dkr.ecr.us-east-1.amazonaws.com/${REPO_NAME}"
 
-export DB_PORT="1433"  
+export DB_PORT="5432"
 export DB_USER="students_admin"  
 export DB_PASSWORD="students_admin123$" 
-export DB_NAME="StudentsDB"
+export DB_NAME="appdb"
 export DB_HOST="students-db.calmsi4iwo2e.us-east-1.rds.amazonaws.com"
 #aws ecr create-repository --repository-name students-db-seed || true
 if aws ecr describe-repositories --repository-names "${REPO_NAME}" >/dev/null 2>&1; then
@@ -32,10 +32,9 @@ aws ecs run-task \
     name="db-fetch",
     environment=[
       {name="DB_HOST",value="students-db.calmsi4iwo2e.us-east-1.rds.amazonaws.com"},
-      {name="DB_PORT",value="1433"},
-      {name="DB_NAME",value="students-db"},
+      {name="DB_PORT",value="5432"},
+      {name="DB_NAME",value="appdb"},
       {name="DB_USER",value="students_admin"},
       {name="DB_PASSWORD",value="students_admin123$"}
     ]
   }]'
-

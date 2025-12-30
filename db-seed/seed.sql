@@ -1,28 +1,17 @@
-IF DB_ID(N'StudentsDB') IS NULL
-BEGIN
-  CREATE DATABASE StudentsDB;
-END
-GO
-
-USE StudentsDB;
-GO
-
-IF OBJECT_ID(N'dbo.Students', N'U') IS NULL
-BEGIN
-  CREATE TABLE dbo.Students (
-    RollNo INT PRIMARY KEY,
-    Name NVARCHAR(100) NOT NULL,
-    Grade NVARCHAR(10) NOT NULL,
-    DOB DATE NOT NULL
-  );
-END
-GO
-
-INSERT INTO dbo.Students (RollNo, Name, Grade, DOB)
-SELECT * FROM (VALUES
-  (1, N'Alice', N'A', '2005-01-15'),
-  (2, N'Bob',   N'B', '2005-05-22'),
-  (3, N'Cara',  N'A', '2006-03-10')
-) AS v(RollNo, Name, Grade, DOB)
-WHERE NOT EXISTS (SELECT 1 FROM dbo.Students);
-GO
+CREATE TABLE IF NOT EXISTS students (
+  rollno INT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  grade VARCHAR(10) NOT NULL,
+  dob DATE NOT NULL
+);
+INSERT INTO students (rollno, name, grade, dob) VALUES
+(1,'Alice','A','2007-02-14'),
+(2,'Bob','B','2007-05-21'),
+(3,'Charlie','A','2007-08-03'),
+(4,'Diana','A','2007-10-30'),
+(5,'Ethan','B','2007-12-11'),
+(6,'Fiona','A','2008-01-19'),
+(7,'George','C','2008-03-07'),
+(8,'Hannah','B','2008-04-25'),
+(9,'Ivan','A','2008-06-15'),
+(10,'Julia','A','2008-09-09');
