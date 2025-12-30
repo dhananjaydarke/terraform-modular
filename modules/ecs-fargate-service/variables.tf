@@ -68,6 +68,18 @@ variable "container_port" {
   default     = 8080
 }
 
+variable "container_entrypoint" {
+  description = "Optional container entrypoint override"
+  type        = list(string)
+  default     = null
+}
+
+variable "container_command" {
+  description = "Optional container command override"
+  type        = list(string)
+  default     = null
+}
+
 variable "container_protocol" {
   description = "Container protocol"
   type        = string

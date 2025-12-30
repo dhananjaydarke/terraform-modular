@@ -74,7 +74,7 @@ variable "db_allocated_storage" {
 variable "db_fetch_image" {
   description = "Image URI for the DB fetch/task runner"
   type        = string
-  default     = "postgres:16-alpine"
+  default     = "students-db-seed:latest"
 }
 
 variable "db_engine" {

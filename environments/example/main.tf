@@ -130,6 +130,8 @@ module "db_fetch_task" {
   task_role_arn           = module.ecs_roles.task_role_arn
   container_name          = "db-fetch"
   container_image         = var.db_fetch_image
+  container_entrypoint    = ["sh", "-c"]
+  container_command       = ["PGPASSWORD=\"$DB_PASSWORD\" psql -h \"$DB_HOST\" -p \"${DB_PORT:-5432}\" -U \"$DB_USER\" -d \"$DB_NAME\" -f /seed.sql"]
   container_port          = 8080
   aws_region              = var.aws_region
   desired_count           = 0
