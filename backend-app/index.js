@@ -32,7 +32,7 @@ app.get(`${apiPrefix}/health`, (_req, res) => {
 
 app.get(`${apiPrefix}/students`, async (req, res) => {
   try {
-    const result = await pool.query('SELECT "RollNo", "Name", "Grade", "DOB" FROM "Students" ORDER BY "RollNo"');
+    const result = await pool.query('SELECT "RollNo", "Name", "Grade", "DOB" FROM "students" ORDER BY "RollNo"');
     res.json(result.rows);
 	} catch (err) {
     console.error("DB error", err);
