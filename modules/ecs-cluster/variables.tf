@@ -9,6 +9,12 @@ variable "enable_container_insights" {
   default     = true
 }
 
+variable "container_insights_log_retention_days" {
+  description = "Retention in days for Container Insights log groups"
+  type        = number
+  default     = 7
+}
+
 variable "tags" {
   description = "Common resource tags"
   type        = map(string)

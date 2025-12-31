@@ -50,6 +50,15 @@ module "ecr_backend" {
   source                  = "../../modules/ecr"
   name                    = "${var.name_prefix}-backend"
   untagged_retention_days = 30
+  force_delete            = true
+  tags                    = local.common_tags
+}
+
+module "ecr_db_seed" {
+  source                  = "../../modules/ecr"
+  name                    = "${var.name_prefix}-db-seed"
+  untagged_retention_days = 30
+  force_delete            = true
   tags                    = local.common_tags
 }
 
@@ -129,9 +138,8 @@ module "db_fetch_task" {
   task_execution_role_arn = module.ecs_roles.task_execution_role_arn
   task_role_arn           = module.ecs_roles.task_role_arn
   container_name          = "db-fetch"
-  container_image         = var.db_fetch_image
+  container_image         = var.db_fetch_image != "" ? var.db_fetch_image : "${module.ecr_db_seed.repository_url}:latest"
   container_entrypoint    = ["sh", "-c"]
-  #container_command       = ["PGPASSWORD=\"$DB_PASSWORD\" psql -h \"$DB_HOST\" -p \"${DB_PORT:-5432}\" -U \"$DB_USER\" -d \"$DB_NAME\" -f /seed.sql"]
   container_command = ["PGPASSWORD=\"$DB_PASSWORD\" psql -h \"$DB_HOST\" -p \"$${DB_PORT:-5432}\" -U \"$DB_USER\" -d \"$DB_NAME\" -f /seed.sql"]
   container_port    = 8080
   aws_region        = var.aws_region
