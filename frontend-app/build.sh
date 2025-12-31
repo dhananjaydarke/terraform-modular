@@ -1,6 +1,6 @@
 #!/bin/bash  
-export API_BASE_URL="students-nlb-fd6b80388143f090.elb.us-east-1.amazonaws.com:8080"
-export DISTRIBUTION_ID="EAHB9ORW8A6US"
+export API_BASE_URL="students-nlb-4241c92715da2f34.elb.us-east-1.amazonaws.com:8080"
+export DISTRIBUTION_ID="E1ERRN7X8ARJIS"
 export BUCKET_NAME="students-static-dev"
 API_BASE_URL=$API_BASE_URL npm run build  
 aws s3 sync dist/ s3://$BUCKET_NAME/ --delete --cache-control max-age=300

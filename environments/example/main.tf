@@ -131,12 +131,13 @@ module "db_fetch_task" {
   container_name          = "db-fetch"
   container_image         = var.db_fetch_image
   container_entrypoint    = ["sh", "-c"]
-  container_command       = ["PGPASSWORD=\"$DB_PASSWORD\" psql -h \"$DB_HOST\" -p \"${DB_PORT:-5432}\" -U \"$DB_USER\" -d \"$DB_NAME\" -f /seed.sql"]
-  container_port          = 8080
-  aws_region              = var.aws_region
-  desired_count           = 0
-  target_group_arn        = null
-  ingress_rules           = []
+  #container_command       = ["PGPASSWORD=\"$DB_PASSWORD\" psql -h \"$DB_HOST\" -p \"${DB_PORT:-5432}\" -U \"$DB_USER\" -d \"$DB_NAME\" -f /seed.sql"]
+  container_command = ["PGPASSWORD=\"$DB_PASSWORD\" psql -h \"$DB_HOST\" -p \"$${DB_PORT:-5432}\" -U \"$DB_USER\" -d \"$DB_NAME\" -f /seed.sql"]
+  container_port    = 8080
+  aws_region        = var.aws_region
+  desired_count     = 0
+  target_group_arn  = null
+  ingress_rules     = []
   environment = {
     DB_HOST     = module.rds.endpoint
     DB_PORT     = tostring(module.rds.port)
