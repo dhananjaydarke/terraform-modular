@@ -34,7 +34,7 @@ function App() {
 
   return (
     <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
-      <h1>Students</h1>
+      <h1>List of Students Enrolled in DD&apos;s Academy</h1>
       <table border="1" cellPadding="8" cellSpacing="0">
         <thead>
           <tr>
@@ -59,4 +59,3 @@ function App() {
 	);
 }
 export default App;
-

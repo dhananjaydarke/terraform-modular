@@ -58,6 +58,8 @@ resource "aws_ecs_task_definition" "this" {
       name      = var.container_name
       image     = var.container_image
       essential = true
+      entryPoint = var.container_entrypoint
+      command    = var.container_command
       portMappings = [
         {
           containerPort = var.container_port

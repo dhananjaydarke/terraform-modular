@@ -19,6 +19,13 @@ resource "aws_ecs_cluster" "this" {
   tags = merge(var.tags, { Name = var.name })
 }
 
+resource "aws_cloudwatch_log_group" "container_insights" {
+  count             = var.enable_container_insights ? 1 : 0
+  name              = "/aws/ecs/containerinsights/${var.name}/performance"
+  retention_in_days = var.container_insights_log_retention_days
+  tags              = var.tags
+}
+
 output "id" {
   value       = aws_ecs_cluster.this.id
   description = "ECS cluster ID"

@@ -6,13 +6,13 @@ variable "name" {
 variable "engine" {
   description = "Database engine (e.g., postgres, mysql)"
   type        = string
-  default     = "sqlserver-ex"
+  default     = "postgres"
 }
 
 variable "engine_version" {
   description = "Engine version"
   type        = string
-  default     = "16.00.4215.2.v1"
+  default     = "16.3"
 }
 
 variable "instance_class" {
@@ -43,7 +43,7 @@ variable "password" {
 variable "db_name" {
   description = "Initial database name"
   type        = string
-  default = "StudentsDB"  
+  default = "appdb"
 }
 
 variable "port" {
