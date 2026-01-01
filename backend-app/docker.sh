@@ -1,6 +1,4 @@
 #!/bin/bash
-
-
 export AWS_DEFAULT_REGION="us-east-1"
 export IMAGE_TAG="latest"
 export REPO_NAME="students-backend"

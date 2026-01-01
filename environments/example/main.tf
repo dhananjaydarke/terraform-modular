@@ -5,6 +5,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
+    local = {
+      source  = "hashicorp/local"
+      version = "~> 2.5"
+    }
   }
 }
 
@@ -140,12 +144,12 @@ module "db_fetch_task" {
   container_name          = "db-fetch"
   container_image         = var.db_fetch_image != "" ? var.db_fetch_image : "${module.ecr_db_seed.repository_url}:latest"
   container_entrypoint    = ["sh", "-c"]
-  container_command = ["PGPASSWORD=\"$DB_PASSWORD\" psql -h \"$DB_HOST\" -p \"$${DB_PORT:-5432}\" -U \"$DB_USER\" -d \"$DB_NAME\" -f /seed.sql"]
-  container_port    = 8080
-  aws_region        = var.aws_region
-  desired_count     = 0
-  target_group_arn  = null
-  ingress_rules     = []
+  container_command       = ["PGPASSWORD=\"$DB_PASSWORD\" psql -h \"$DB_HOST\" -p \"$${DB_PORT:-5432}\" -U \"$DB_USER\" -d \"$DB_NAME\" -f /seed.sql"]
+  container_port          = 8080
+  aws_region              = var.aws_region
+  desired_count           = 0
+  target_group_arn        = null
+  ingress_rules           = []
   environment = {
     DB_HOST     = module.rds.endpoint
     DB_PORT     = tostring(module.rds.port)
@@ -197,4 +201,14 @@ module "codebuild_frontend" {
   api_base_url               = var.frontend_api_base_url
   buildspec                  = "../../modules/codebuild-frontend/buildspec.yml"
   tags                       = local.common_tags
+}
+resource "local_file" "env_exports" {
+  filename = "${path.module}/.env"
+  content  = <<EOF
+export API_BASE_URL=http://${module.lb.lb_dns_name}:${var.backend_port}/api
+export DISTRIBUTION_ID=${module.static_site.distribution_id}
+export subnets=${join(",", module.network.private_subnet_ids)}
+export database_security_group=${module.rds.security_group_id}
+export DB_HOST=${module.rds.endpoint}
+EOF
 }
