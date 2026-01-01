@@ -53,7 +53,8 @@ resource "aws_subnet" "private" {
 
 resource "aws_eip" "nat" {
   count = var.az_count
-  vpc   = true
+  #vpc   = true
+  domain = "vpc"
   tags = merge(var.tags, {
     Name = "${var.name}-nat-eip-${count.index + 1}"
   })
