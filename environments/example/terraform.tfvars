@@ -5,3 +5,5 @@ db_name     = "appdb"
 db_user     = "appuser"
 db_password = "super-secret"
 */
+cloudfront_domain_name        = "dhananjayglobaluniversity.com"
+create_cloudfront_hosted_zone = true

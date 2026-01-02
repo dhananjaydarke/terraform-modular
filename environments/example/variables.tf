@@ -118,6 +118,12 @@ variable "cloudfront_domain_name" {
   default     = ""
 }
 
+variable "create_cloudfront_hosted_zone" {
+  description = "Create a Route53 hosted zone for the CloudFront domain"
+  type        = bool
+  default     = true
+}
+
 variable "cloudfront_aliases" {
   description = "Alternate domain names for CloudFront"
   type        = list(string)

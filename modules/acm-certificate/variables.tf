@@ -21,6 +21,12 @@ variable "hosted_zone_id" {
   default     = ""
 }
 
+variable "enable_validation" {
+  description = "Whether to create DNS validation records"
+  type        = bool
+  default     = true
+}
+
 variable "tags" {
   description = "Common resource tags"
   type        = map(string)

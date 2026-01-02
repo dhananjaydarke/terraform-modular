@@ -26,7 +26,9 @@ locals {
     Project = "students-app"
     Env     = var.environment
   }
-  cloudfront_aliases = length(var.cloudfront_aliases) > 0 ? var.cloudfront_aliases : (var.cloudfront_domain_name != "" ? [var.cloudfront_domain_name] : [])
+  cloudfront_aliases            = length(var.cloudfront_aliases) > 0 ? var.cloudfront_aliases : (var.cloudfront_domain_name != "" ? [var.cloudfront_domain_name] : [])
+  cloudfront_record_names       = distinct(compact(concat([var.cloudfront_domain_name], var.cloudfront_aliases)))
+  enable_cloudfront_dns_records = var.cloudfront_domain_name != "" && (var.create_cloudfront_hosted_zone || var.cloudfront_hosted_zone_id != "")
 }
 
 module "network" {
@@ -200,10 +202,51 @@ module "static_site" {
   depends_on                 = [module.network]
 }
 
+resource "aws_route53_zone" "cloudfront" {
+  count = var.create_cloudfront_hosted_zone && var.cloudfront_domain_name != "" ? 1 : 0
+  name  = var.cloudfront_domain_name
+  tags  = local.common_tags
+}
+
+data "aws_cloudfront_distribution" "static_site" {
+  id = module.static_site.distribution_id
+}
+
+locals {
+  cloudfront_hosted_zone_id = var.create_cloudfront_hosted_zone && var.cloudfront_domain_name != "" ? aws_route53_zone.cloudfront[0].zone_id : var.cloudfront_hosted_zone_id
+}
+
+resource "aws_route53_record" "cloudfront_alias_a" {
+  for_each = local.enable_cloudfront_dns_records ? toset(local.cloudfront_record_names) : []
+
+  zone_id = local.cloudfront_hosted_zone_id
+  name    = each.value
+  type    = "A"
+
+  alias {
+    name                   = data.aws_cloudfront_distribution.static_site.domain_name
+    zone_id                = data.aws_cloudfront_distribution.static_site.hosted_zone_id
+    evaluate_target_health = false
+  }
+}
+
+resource "aws_route53_record" "cloudfront_alias_aaaa" {
+  for_each = local.enable_cloudfront_dns_records ? toset(local.cloudfront_record_names) : []
+
+  zone_id = local.cloudfront_hosted_zone_id
+  name    = each.value
+  type    = "AAAA"
+
+  alias {
+    name                   = data.aws_cloudfront_distribution.static_site.domain_name
+    zone_id                = data.aws_cloudfront_distribution.static_site.hosted_zone_id
+    evaluate_target_health = false
+  }
+}
+
 resource "local_file" "env_exports" {
   filename = "${path.module}/.env"
   content  = <<EOF
-//export API_BASE_URL=http://${module.lb.lb_dns_name}:${var.backend_port}/api
 export API_BASE_URL=/api
 export DISTRIBUTION_ID=${module.static_site.distribution_id}
 export subnets=${join(",", module.network.private_subnet_ids)}
@@ -218,7 +261,8 @@ module "cloudfront_cert" {
   providers                 = { aws = aws.us_east_1 }
   domain_name               = var.cloudfront_domain_name
   subject_alternative_names = local.cloudfront_aliases
-  hosted_zone_id            = var.cloudfront_hosted_zone_id
+  hosted_zone_id            = local.cloudfront_hosted_zone_id
+  enable_validation         = local.enable_cloudfront_dns_records
   tags                      = local.common_tags
 }
 
