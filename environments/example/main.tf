@@ -5,6 +5,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
+    local = {
+      source  = "hashicorp/local"
+      version = "~> 2.5"
+    }
   }
 }
 
@@ -34,11 +38,11 @@ module "network" {
 }
 
 module "rds" {
-  source        = "../../modules/rds"
-  name          = "${var.name_prefix}-db"
-  vpc_id        = module.network.vpc_id
-  subnet_ids    = module.network.private_subnet_ids
-  allowed_cidrs = [module.network.vpc_cidr]
+  source                  = "../../modules/rds"
+  name                    = "${var.name_prefix}-db"
+  vpc_id                  = module.network.vpc_id
+  subnet_ids              = module.network.private_subnet_ids
+  allowed_cidrs           = [module.network.vpc_cidr]
   db_name                 = var.db_name
   username                = var.db_user
   password                = var.db_password
@@ -157,7 +161,7 @@ module "db_fetch_task" {
   container_command       = ["PGPASSWORD=\"$DB_PASSWORD\" psql -h \"$DB_HOST\" -p \"$${DB_PORT:-5432}\" -U \"$DB_USER\" -d \"$DB_NAME\" -f /seed.sql"]
   container_port          = 8080
   aws_region              = var.aws_region
-  desired_count           = 0
+  desired_count           = 2
   target_group_arn        = null
   ingress_rules           = []
   environment = {
@@ -183,22 +187,34 @@ module "db_fetch_schedule" {
 }
 
 module "static_site" {
-  source      = "../../modules/static-site"
-  bucket_name = "${var.name_prefix}-static-${var.environment}"
-  tags        = local.common_tags
-  api_origin_domain_name = module.api_gateway.api_domain_name
+  source                 = "../../modules/static-site"
+  bucket_name            = "${var.name_prefix}-static-${var.environment}"
+  tags                   = local.common_tags
+  api_origin_domain_name = module.lb.lb_dns_name
   api_origin_id          = "api-origin"
   api_origin_path        = ""
   api_cache_path_pattern = "/api/*"
   acm_certificate_arn    = var.cloudfront_domain_name != "" ? module.cloudfront_cert[0].certificate_arn : ""
   aliases                = local.cloudfront_aliases
-  depends_on  = [module.network]
+  depends_on             = [module.network]
+}
+
+resource "local_file" "env_exports" {
+  filename = "${path.module}/.env"
+  content  = <<EOF
+//export API_BASE_URL=http://${module.lb.lb_dns_name}:${var.backend_port}/api
+export API_BASE_URL=/api
+export DISTRIBUTION_ID=${module.static_site.distribution_id}
+export subnets=${join(",", module.network.private_subnet_ids)}
+export database_security_group=${module.rds.security_group_id}
+export DB_HOST=${module.rds.endpoint}
+EOF
 }
 
 module "cloudfront_cert" {
-  count      = var.cloudfront_domain_name != "" ? 1 : 0
-  source     = "../../modules/acm-certificate"
-  providers  = { aws = aws.us_east_1 }
+  count                     = var.cloudfront_domain_name != "" ? 1 : 0
+  source                    = "../../modules/acm-certificate"
+  providers                 = { aws = aws.us_east_1 }
   domain_name               = var.cloudfront_domain_name
   subject_alternative_names = local.cloudfront_aliases
   hosted_zone_id            = var.cloudfront_hosted_zone_id

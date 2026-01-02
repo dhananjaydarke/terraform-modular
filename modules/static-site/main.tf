@@ -141,6 +141,19 @@ resource "aws_cloudfront_distribution" "this" {
     ssl_support_method             = var.acm_certificate_arn != "" ? "sni-only" : null
     minimum_protocol_version       = var.acm_certificate_arn != "" ? "TLSv1.2_2021" : null
   }
+custom_error_response {
+    error_code            = 403
+    response_code         = 200
+    response_page_path    = "/index.html"
+    error_caching_min_ttl = 0
+  }
+
+  custom_error_response {
+    error_code            = 404
+    response_code         = 200
+    response_page_path    = "/index.html"
+    error_caching_min_ttl = 0
+  }
 
   tags = merge(var.tags, { Name = "${var.bucket_name}-cdn" })
 }
