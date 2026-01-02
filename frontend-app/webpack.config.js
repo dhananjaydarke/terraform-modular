@@ -43,7 +43,7 @@ use: {
       filename: 'index.html'             // Output to dist/
     }),
     new webpack.DefinePlugin({
-      'process.env.API_BASE_URL': JSON.stringify(process.env.API_BASE_URL || '/api')
+      'process.env.API_BASE_URL': JSON.stringify('/api')
     })
   ],
 

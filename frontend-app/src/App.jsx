@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const API_BASE_URL = process.env.API_BASE_URL || "/api";
+const API_BASE_URL = "/api";
 
 function App() {
   const [students, setStudents] = useState([]);

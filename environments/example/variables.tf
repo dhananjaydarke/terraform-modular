@@ -85,25 +85,25 @@ variable "db_engine" {
 variable "backend_github_repo" {
   description = "GitHub HTTPS URL for backend source"
   type        = string
-  default     = "https://github.com/dhananjaydarke/terraform-modular/tree/main/backend-app"
+  default     = "https://github.com/dhananjaydarke/terraform-modular"
 }
 
 variable "backend_github_branch" {
   description = "Backend branch"
   type        = string
-  default     = "main"
+  default     = "origin/origin/codex/update-backend-to-use-postgresql"
 }
 
 variable "frontend_github_repo" {
   description = "GitHub HTTPS URL for frontend source"
   type        = string
-  default     = "https://github.com/dhananjaydarke/terraform-modular/tree/main/frontend-app"
+  default     = "https://github.com/dhananjaydarke/terraform-modular"
 }
 
 variable "frontend_github_branch" {
   description = "Frontend branch"
   type        = string
-  default     = "main"
+  default     = "origin/origin/codex/update-backend-to-use-postgresql"
 }
 
 variable "frontend_api_base_url" {
