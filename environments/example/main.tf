@@ -16,11 +16,17 @@ provider "aws" {
   region = var.aws_region
 }
 
+provider "aws" {
+  alias  = "us_east_1"
+  region = "us-east-1"
+}
+
 locals {
   common_tags = {
     Project = "students-app"
     Env     = var.environment
   }
+  cloudfront_aliases = length(var.cloudfront_aliases) > 0 ? var.cloudfront_aliases : (var.cloudfront_domain_name != "" ? [var.cloudfront_domain_name] : [])
 }
 
 module "network" {
@@ -32,11 +38,11 @@ module "network" {
 }
 
 module "rds" {
-  source                  = "../../modules/rds"
-  name                    = "${var.name_prefix}-db"
-  vpc_id                  = module.network.vpc_id
-  subnet_ids              = module.network.private_subnet_ids
-  allowed_cidrs           = [module.network.vpc_cidr]
+  source        = "../../modules/rds"
+  name          = "${var.name_prefix}-db"
+  vpc_id        = module.network.vpc_id
+  subnet_ids    = module.network.private_subnet_ids
+  allowed_cidrs = [module.network.vpc_cidr]
   db_name                 = var.db_name
   username                = var.db_user
   password                = var.db_password
@@ -96,6 +102,14 @@ module "lb" {
     unhealthy_threshold = 3
   }
   tags = local.common_tags
+}
+
+module "api_gateway" {
+  source          = "../../modules/apigateway-vpc-link"
+  name            = "${var.name_prefix}-api"
+  subnet_ids      = module.network.private_subnet_ids
+  integration_uri = module.lb.listener_arn
+  tags            = local.common_tags
 }
 
 module "backend_service" {
@@ -176,7 +190,23 @@ module "static_site" {
   source      = "../../modules/static-site"
   bucket_name = "${var.name_prefix}-static-${var.environment}"
   tags        = local.common_tags
+  api_origin_domain_name = module.api_gateway.api_domain_name
+  api_origin_id          = "api-origin"
+  api_origin_path        = ""
+  api_cache_path_pattern = "/api/*"
+  acm_certificate_arn    = var.cloudfront_domain_name != "" ? module.cloudfront_cert[0].certificate_arn : ""
+  aliases                = local.cloudfront_aliases
   depends_on  = [module.network]
+}
+
+module "cloudfront_cert" {
+  count      = var.cloudfront_domain_name != "" ? 1 : 0
+  source     = "../../modules/acm-certificate"
+  providers  = { aws = aws.us_east_1 }
+  domain_name               = var.cloudfront_domain_name
+  subject_alternative_names = local.cloudfront_aliases
+  hosted_zone_id            = var.cloudfront_hosted_zone_id
+  tags                      = local.common_tags
 }
 
 # Backend CodeBuild (build and push backend image)

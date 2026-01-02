@@ -24,17 +24,15 @@ app.use(
   })
 );
 
-
-
 app.get(`${apiPrefix}/health`, (_req, res) => {
   res.json({ status: "ok" });
 });
 
 app.get(`${apiPrefix}/students`, async (req, res) => {
   try {
-    const result = await pool.query('SELECT "RollNo", "Name", "Grade", "DOB" FROM "students" ORDER BY "RollNo"');
+    const result = await pool.query("SELECT rollno, name, grade, dob FROM students ORDER BY rollno");
     res.json(result.rows);
-	} catch (err) {
+  } catch (err) {
     console.error("DB error", err);
     res.status(500).json({ error: "Database error" });
   }

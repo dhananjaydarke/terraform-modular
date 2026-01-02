@@ -62,11 +62,28 @@ data "aws_iam_policy_document" "bucket" {
 resource "aws_cloudfront_distribution" "this" {
   enabled             = true
   default_root_object = var.default_root_object
+  aliases             = var.aliases
 
   origin {
     domain_name              = aws_s3_bucket.this.bucket_regional_domain_name
     origin_id                = "s3-origin"
     origin_access_control_id = aws_cloudfront_origin_access_control.this.id
+  }
+
+  dynamic "origin" {
+    for_each = var.api_origin_domain_name != "" ? [var.api_origin_domain_name] : []
+    content {
+      domain_name = origin.value
+      origin_id   = var.api_origin_id
+      origin_path = var.api_origin_path
+
+      custom_origin_config {
+        http_port              = 80
+        https_port             = 443
+        origin_protocol_policy = var.api_origin_protocol_policy
+        origin_ssl_protocols   = ["TLSv1.2"]
+      }
+    }
   }
 
   default_cache_behavior {
@@ -88,6 +105,30 @@ resource "aws_cloudfront_distribution" "this" {
     max_ttl                = 86400
   }
 
+  dynamic "ordered_cache_behavior" {
+    for_each = var.api_origin_domain_name != "" ? [var.api_origin_domain_name] : []
+    content {
+      path_pattern     = var.api_cache_path_pattern
+      allowed_methods  = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
+      cached_methods   = ["GET", "HEAD"]
+      target_origin_id = var.api_origin_id
+
+      forwarded_values {
+        query_string = true
+        headers      = ["*"]
+        cookies {
+          forward = "all"
+        }
+      }
+
+      viewer_protocol_policy = "redirect-to-https"
+      compress               = true
+      min_ttl                = 0
+      default_ttl            = 0
+      max_ttl                = 0
+    }
+  }
+
   restrictions {
     geo_restriction {
       restriction_type = "none"
@@ -95,7 +136,10 @@ resource "aws_cloudfront_distribution" "this" {
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = true
+    acm_certificate_arn            = var.acm_certificate_arn != "" ? var.acm_certificate_arn : null
+    cloudfront_default_certificate = var.acm_certificate_arn == "" ? true : false
+    ssl_support_method             = var.acm_certificate_arn != "" ? "sni-only" : null
+    minimum_protocol_version       = var.acm_certificate_arn != "" ? "TLSv1.2_2021" : null
   }
 
   tags = merge(var.tags, { Name = "${var.bucket_name}-cdn" })

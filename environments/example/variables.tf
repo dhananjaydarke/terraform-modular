@@ -111,3 +111,21 @@ variable "frontend_api_base_url" {
   type        = string
   default     = "http://localhost:8080/api"
 }
+
+variable "cloudfront_domain_name" {
+  description = "Custom domain name for CloudFront (optional)"
+  type        = string
+  default     = ""
+}
+
+variable "cloudfront_aliases" {
+  description = "Alternate domain names for CloudFront"
+  type        = list(string)
+  default     = []
+}
+
+variable "cloudfront_hosted_zone_id" {
+  description = "Route53 hosted zone ID for CloudFront certificate validation (optional)"
+  type        = string
+  default     = ""
+}
