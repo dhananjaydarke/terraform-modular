@@ -140,7 +140,7 @@ module "backend_service" {
       from_port   = var.backend_port
       to_port     = var.backend_port
       protocol    = "tcp"
-      cidr_blocks =  ["0.0.0.0/0"]
+      cidr_blocks = ["0.0.0.0/0"]
       description = "Public access for CloudFront/NLB"
     }
   ]
@@ -187,17 +187,17 @@ module "db_fetch_schedule" {
 }
 
 module "static_site" {
-  source                 = "../../modules/static-site"
-  bucket_name            = "${var.name_prefix}-static-${var.environment}"
-  tags                   = local.common_tags
-  api_origin_domain_name = module.lb.lb_dns_name
-  api_origin_id          = "api-origin"
+  source                     = "../../modules/static-site"
+  bucket_name                = "${var.name_prefix}-static-${var.environment}"
+  tags                       = local.common_tags
+  api_origin_domain_name     = module.lb.lb_dns_name
+  api_origin_id              = "api-origin"
   api_origin_protocol_policy = "http-only"
-  api_origin_path        = ""
-  api_cache_path_pattern = "/api/*"
-  acm_certificate_arn    = var.cloudfront_domain_name != "" ? module.cloudfront_cert[0].certificate_arn : ""
-  aliases                = local.cloudfront_aliases
-  depends_on             = [module.network]
+  api_origin_path            = ""
+  api_cache_path_pattern     = "/api/*"
+  acm_certificate_arn        = var.cloudfront_domain_name != "" ? module.cloudfront_cert[0].certificate_arn : ""
+  aliases                    = local.cloudfront_aliases
+  depends_on                 = [module.network]
 }
 
 resource "local_file" "env_exports" {
