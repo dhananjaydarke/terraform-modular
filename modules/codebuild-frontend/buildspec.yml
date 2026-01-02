@@ -1,9 +1,5 @@
 version: 0.2
 env:
-  variables:
-    API_BASE_URL: "d1j01lbrwdrrrt.cloudfront.net/api"
-    DISTRIBUTION_ID: "E1SNOQR6V5R4ZU"
-    BUCKET_NAME: "students-static-dev"
 phases:
   install:
     commands:

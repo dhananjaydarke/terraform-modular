@@ -109,7 +109,7 @@ variable "frontend_github_branch" {
 variable "frontend_api_base_url" {
   description = "API base URL to inject at frontend build time"
   type        = string
-  default     = "http://localhost:8080/api"
+  default     = "/api"
 }
 
 variable "cloudfront_domain_name" {

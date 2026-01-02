@@ -30,7 +30,7 @@ variable "api_origin_path" {
 variable "api_origin_protocol_policy" {
   description = "Protocol policy for the API origin"
   type        = string
-  default     = "https-only"
+  default     = "http-only"
 }
 
 variable "api_cache_path_pattern" {

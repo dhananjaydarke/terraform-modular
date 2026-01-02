@@ -140,8 +140,8 @@ module "backend_service" {
       from_port   = var.backend_port
       to_port     = var.backend_port
       protocol    = "tcp"
-      cidr_blocks = [module.network.vpc_cidr]
-      description = "From VPC"
+      cidr_blocks =  ["0.0.0.0/0"]
+      description = "Public access for CloudFront/NLB"
     }
   ]
   tags = local.common_tags
@@ -192,6 +192,7 @@ module "static_site" {
   tags                   = local.common_tags
   api_origin_domain_name = module.lb.lb_dns_name
   api_origin_id          = "api-origin"
+  api_origin_protocol_policy = "http-only"
   api_origin_path        = ""
   api_cache_path_pattern = "/api/*"
   acm_certificate_arn    = var.cloudfront_domain_name != "" ? module.cloudfront_cert[0].certificate_arn : ""

@@ -3,3 +3,6 @@ terraform-provider-local_v2.6.1_x5.exe
 node_modules
 dist
 .env
+.terraform
+terraform.tfstate
+terraform.tfstate.backup
