@@ -26,7 +26,7 @@ aws ecs run-task \
   --cluster "arn:aws:ecs:us-east-1:437147519305:cluster/students-cluster" \
   --launch-type "FARGATE" \
   --task-definition "arn:aws:ecs:us-east-1:437147519305:task-definition/students-db-fetch" \
- --network-configuration "awsvpcConfiguration={subnet-010440914faaebfe9,subnet-09380cca9f715e298],securityGroups=[sg-0f622a86be90ceb4a],assignPublicIp=DISABLED}" \
+ --network-configuration "awsvpcConfiguration={subnets=[subnet-010440914faaebfe9,subnet-09380cca9f715e298],securityGroups=[sg-0f622a86be90ceb4a],assignPublicIp=DISABLED}" \
   --overrides 'containerOverrides=[{
     name="db-fetch",
     environment=[
