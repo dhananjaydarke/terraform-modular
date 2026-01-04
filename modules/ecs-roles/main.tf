@@ -29,6 +29,16 @@ resource "aws_iam_role_policy_attachment" "execution_managed" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+resource "aws_iam_role_policy" "task_execution_inline" {
+  count  = length(var.task_execution_inline_policies) > 0 ? 1 : 0
+  name   = "${var.name}-task-execution-inline"
+  role   = aws_iam_role.task_execution.id
+  policy = jsonencode({
+    Version   = "2012-10-17",
+    Statement = var.task_execution_inline_policies
+  })
+}
+
 resource "aws_iam_role" "task" {
   name               = "${var.name}-task"
   assume_role_policy = data.aws_iam_policy_document.task_execution_assume.json

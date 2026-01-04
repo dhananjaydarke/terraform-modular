@@ -13,11 +13,23 @@ data "aws_cloudwatch_log_groups" "container_insights" {
 }
 
 locals {
-  container_insights_log_group_exists = length(data.aws_cloudwatch_log_groups.container_insights.log_group_names) > 0
+  container_insights_log_group_exists = contains(
+    data.aws_cloudwatch_log_groups.container_insights.log_group_names,
+    "/aws/ecs/containerinsights/${var.name}/performance"
+  )
 }
 
+/*
+data "aws_cloudwatch_log_groups" "container_insights" {
+  log_group_name_prefix = "/aws/ecs/containerinsights/${var.name}/performance"
+}
+
+locals {
+  container_insights_log_group_exists = length(data.aws_cloudwatch_log_groups.container_insights.log_group_names) > 0
+}
+*/
 resource "aws_cloudwatch_log_group" "container_insights" {
-  count             = var.enable_container_insights && !local.container_insights_log_group_exists ? 1 : 0
+  count             = var.enable_container_insights && var.manage_container_insights_log_group && !local.container_insights_log_group_exists ? 1 : 0
   name              = "/aws/ecs/containerinsights/${var.name}/performance"
   retention_in_days = var.container_insights_log_retention_days
   tags              = var.tags

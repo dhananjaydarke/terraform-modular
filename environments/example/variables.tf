@@ -4,6 +4,18 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
+variable "enable_api_gateway" {
+  description = "Whether to create the API Gateway HTTP API and VPC link resources"
+  type        = bool
+  default     = false
+}
+
+variable "manage_container_insights_log_group" {
+  description = "Whether Terraform should manage the ECS Container Insights log group"
+  type        = bool
+  default     = true
+}
+
 variable "environment" {
   description = "Environment name"
   type        = string
@@ -40,11 +52,29 @@ variable "db_user" {
   default     = "students_admin"
 }
 
+variable "enable_nat_gateway" {
+  description = "Whether to create NAT gateways and private outbound routes"
+  type        = bool
+  default     = true
+}
+
 variable "db_password" {
   description = "Master password"
   type        = string
   sensitive   = true
   default     = "students_admin123$"
+}
+
+variable "use_db_secrets_manager" {
+  description = "Store DB username/password in Secrets Manager and inject into ECS tasks"
+  type        = bool
+  default     = false
+}
+
+variable "db_secret_name" {
+  description = "Secrets Manager secret name for DB credentials"
+  type        = string
+  default     = ""
 }
 
 variable "db_name" {
@@ -132,6 +162,18 @@ variable "cloudfront_aliases" {
 
 variable "cloudfront_hosted_zone_id" {
   description = "Route53 hosted zone ID for CloudFront certificate validation (optional)"
+  type        = string
+  default     = ""
+}
+
+variable "enable_cloudfront_waf" {
+  description = "Enable AWS WAFv2 Web ACL for the CloudFront distribution"
+  type        = bool
+  default     = false
+}
+
+variable "cloudfront_waf_name" {
+  description = "Name for the CloudFront WAFv2 Web ACL (optional)"
   type        = string
   default     = ""
 }

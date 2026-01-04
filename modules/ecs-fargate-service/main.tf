@@ -10,6 +10,7 @@ terraform {
 
 locals {
   environment = [for k, v in var.environment : { name = k, value = v }]
+  secrets     = [for k, v in var.container_secrets : { name = k, valueFrom = v }]  
 }
 
 resource "aws_security_group" "this" {
@@ -76,6 +77,7 @@ resource "aws_ecs_task_definition" "this" {
         }
       }
       environment = local.environment
+      secrets     = local.secrets	  
     }
   ])
 

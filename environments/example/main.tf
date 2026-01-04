@@ -29,14 +29,17 @@ locals {
   cloudfront_aliases            = length(var.cloudfront_aliases) > 0 ? var.cloudfront_aliases : (var.cloudfront_domain_name != "" ? [var.cloudfront_domain_name] : [])
   cloudfront_record_names       = distinct(compact(concat([var.cloudfront_domain_name], var.cloudfront_aliases)))
   enable_cloudfront_dns_records = var.cloudfront_domain_name != "" && (var.create_cloudfront_hosted_zone || var.cloudfront_hosted_zone_id != "")
+  cloudfront_waf_name           = var.cloudfront_waf_name != "" ? var.cloudfront_waf_name : "${var.name_prefix}-cloudfront-waf"
+  db_secret_name                = var.db_secret_name != "" ? var.db_secret_name : "${var.name_prefix}-db-credentials"
 }
 
 module "network" {
-  source   = "../../modules/network"
-  name     = "${var.name_prefix}-net"
-  vpc_cidr = var.vpc_cidr
-  az_count = 2
-  tags     = local.common_tags
+  source             = "../../modules/network"
+  name               = "${var.name_prefix}-net"
+  vpc_cidr           = var.vpc_cidr
+  az_count           = 2
+  enable_nat_gateway = var.enable_nat_gateway
+  tags               = local.common_tags
 }
 
 module "rds" {
@@ -75,17 +78,52 @@ module "ecr_db_seed" {
 }
 
 module "ecs_cluster" {
-  source                    = "../../modules/ecs-cluster"
-  name                      = "${var.name_prefix}-cluster"
-  enable_container_insights = true
-  tags                      = local.common_tags
+  source                              = "../../modules/ecs-cluster"
+  name                                = "${var.name_prefix}-cluster"
+  enable_container_insights           = true
+  manage_container_insights_log_group = var.manage_container_insights_log_group
+  tags                                = local.common_tags
 }
 
 module "ecs_roles" {
   source               = "../../modules/ecs-roles"
   name                 = "${var.name_prefix}-ecs"
   task_inline_policies = []
-  tags                 = local.common_tags
+  task_execution_inline_policies = var.use_db_secrets_manager ? [
+    {
+      Effect   = "Allow"
+      Action   = ["secretsmanager:GetSecretValue"]
+      Resource = [aws_secretsmanager_secret.db_credentials[0].arn]
+    }
+  ] : []
+  tags = local.common_tags
+}
+
+resource "aws_secretsmanager_secret" "db_credentials" {
+  count = var.use_db_secrets_manager ? 1 : 0
+  name  = local.db_secret_name
+  tags  = local.common_tags
+}
+
+resource "aws_secretsmanager_secret_version" "db_credentials" {
+  count     = var.use_db_secrets_manager ? 1 : 0
+  secret_id = aws_secretsmanager_secret.db_credentials[0].id
+  secret_string = jsonencode({
+    username = var.db_user
+    password = var.db_password
+  })
+}
+
+locals {
+  db_env = {
+    DB_HOST = module.rds.endpoint
+    DB_PORT = tostring(module.rds.port)
+    DB_NAME = module.rds.name
+  }
+  db_secrets = var.use_db_secrets_manager ? {
+    DB_USER     = "${aws_secretsmanager_secret.db_credentials[0].arn}:username::"
+    DB_PASSWORD = "${aws_secretsmanager_secret.db_credentials[0].arn}:password::"
+  } : {}
 }
 
 module "lb" {
@@ -107,6 +145,7 @@ module "lb" {
 }
 
 module "api_gateway" {
+  count           = var.enable_api_gateway ? 1 : 0
   source          = "../../modules/apigateway-vpc-link"
   name            = "${var.name_prefix}-api"
   subnet_ids      = module.network.private_subnet_ids
@@ -130,13 +169,8 @@ module "backend_service" {
   desired_count           = 2
   cpu                     = 256
   memory                  = 512
-  environment = {
-    DB_HOST     = module.rds.endpoint
-    DB_PORT     = tostring(module.rds.port)
-    DB_NAME     = module.rds.name
-    DB_USER     = module.rds.username
-    DB_PASSWORD = var.db_password
-  }
+  environment             = merge(local.db_env, var.use_db_secrets_manager ? {} : { DB_USER = module.rds.username, DB_PASSWORD = var.db_password })
+  container_secrets       = local.db_secrets
   ingress_rules = [
     {
       from_port   = var.backend_port
@@ -166,14 +200,9 @@ module "db_fetch_task" {
   desired_count           = 2
   target_group_arn        = null
   ingress_rules           = []
-  environment = {
-    DB_HOST     = module.rds.endpoint
-    DB_PORT     = tostring(module.rds.port)
-    DB_NAME     = module.rds.name
-    DB_USER     = module.rds.username
-    DB_PASSWORD = var.db_password
-  }
-  tags = local.common_tags
+  environment             = merge(local.db_env, var.use_db_secrets_manager ? {} : { DB_USER = module.rds.username, DB_PASSWORD = var.db_password })
+  container_secrets       = local.db_secrets
+  tags                    = local.common_tags
 }
 
 module "db_fetch_schedule" {
@@ -188,17 +217,82 @@ module "db_fetch_schedule" {
   tags                = local.common_tags
 }
 
+resource "aws_wafv2_web_acl" "cloudfront" {
+  count    = var.enable_cloudfront_waf ? 1 : 0
+  provider = aws.us_east_1
+
+  name  = local.cloudfront_waf_name
+  scope = "CLOUDFRONT"
+
+  default_action {
+    allow {}
+  }
+
+  rule {
+    name     = "AWSManagedRulesCommonRuleSet"
+    priority = 1
+
+    override_action {
+      none {}
+    }
+
+    statement {
+      managed_rule_group_statement {
+        name        = "AWSManagedRulesCommonRuleSet"
+        vendor_name = "AWS"
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "${local.cloudfront_waf_name}-common"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  rule {
+    name     = "AWSManagedRulesSQLiRuleSet"
+    priority = 2
+
+    override_action {
+      none {}
+    }
+
+    statement {
+      managed_rule_group_statement {
+        name        = "AWSManagedRulesSQLiRuleSet"
+        vendor_name = "AWS"
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "${local.cloudfront_waf_name}-sqli"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  visibility_config {
+    cloudwatch_metrics_enabled = true
+    metric_name                = local.cloudfront_waf_name
+    sampled_requests_enabled   = true
+  }
+
+  tags = local.common_tags
+}
+
 module "static_site" {
   source                     = "../../modules/static-site"
   bucket_name                = "${var.name_prefix}-static-${var.environment}"
   tags                       = local.common_tags
   api_origin_domain_name     = module.lb.lb_dns_name
   api_origin_id              = "api-origin"
-  api_origin_protocol_policy = "http-only"
   api_origin_path            = ""
   api_cache_path_pattern     = "/api/*"
-  acm_certificate_arn        = var.cloudfront_domain_name != "" ? module.cloudfront_cert[0].certificate_arn : ""
-  aliases                    = local.cloudfront_aliases
+  api_origin_protocol_policy = "http-only"
+  acm_certificate_arn        = local.enable_cloudfront_dns_records ? module.cloudfront_cert[0].certificate_arn_for_cloudfront : ""
+  aliases                    = local.enable_cloudfront_dns_records ? local.cloudfront_aliases : []
+  web_acl_id                 = var.enable_cloudfront_waf ? aws_wafv2_web_acl.cloudfront[0].arn : ""
   depends_on                 = [module.network]
 }
 

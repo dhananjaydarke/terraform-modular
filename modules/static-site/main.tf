@@ -63,7 +63,8 @@ resource "aws_cloudfront_distribution" "this" {
   enabled             = true
   default_root_object = var.default_root_object
   aliases             = var.aliases
-
+  web_acl_id          = var.web_acl_id == "" ? null : var.web_acl_id
+  
   origin {
     domain_name              = aws_s3_bucket.this.bucket_regional_domain_name
     origin_id                = "s3-origin"

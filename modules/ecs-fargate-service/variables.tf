@@ -92,6 +92,12 @@ variable "environment" {
   default     = {}
 }
 
+variable "container_secrets" {
+  description = "Secrets to inject into the container"
+  type        = map(string)
+  default     = {}
+}
+
 variable "target_group_arn" {
   description = "Optional target group to register"
   type        = string

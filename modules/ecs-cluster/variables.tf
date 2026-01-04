@@ -15,6 +15,12 @@ variable "container_insights_log_retention_days" {
   default     = 7
 }
 
+variable "manage_container_insights_log_group" {
+  description = "Whether Terraform should manage the Container Insights log group lifecycle"
+  type        = bool
+  default     = true
+}
+
 variable "tags" {
   description = "Common resource tags"
   type        = map(string)

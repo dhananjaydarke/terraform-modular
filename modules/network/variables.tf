@@ -14,6 +14,12 @@ variable "az_count" {
   default     = 2
 }
 
+variable "enable_nat_gateway" {
+  description = "Whether to create NAT gateways and private outbound routes"
+  type        = bool
+  default     = true
+}
+
 variable "tags" {
   description = "Common resource tags"
   type        = map(string)

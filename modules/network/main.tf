@@ -52,8 +52,7 @@ resource "aws_subnet" "private" {
 }
 
 resource "aws_eip" "nat" {
-  count = var.az_count
-  #vpc   = true
+  count  = var.enable_nat_gateway ? var.az_count : 0
   domain = "vpc"
   tags = merge(var.tags, {
     Name = "${var.name}-nat-eip-${count.index + 1}"
@@ -61,7 +60,7 @@ resource "aws_eip" "nat" {
 }
 
 resource "aws_nat_gateway" "this" {
-  count         = var.az_count
+  count  = var.enable_nat_gateway ? var.az_count : 0
   subnet_id     = aws_subnet.public[count.index].id
   allocation_id = aws_eip.nat[count.index].id
   tags = merge(var.tags, {
@@ -98,7 +97,7 @@ resource "aws_route_table" "private" {
 }
 
 resource "aws_route" "private_outbound" {
-  count                  = var.az_count
+  count  = var.enable_nat_gateway ? var.az_count : 0
   route_table_id         = aws_route_table.private[count.index].id
   destination_cidr_block = "0.0.0.0/0"
   nat_gateway_id         = aws_nat_gateway.this[count.index].id

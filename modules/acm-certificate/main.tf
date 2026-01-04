@@ -42,6 +42,16 @@ output "certificate_arn" {
   description = "ACM certificate ARN"
 }
 
+output "validated_certificate_arn" {
+  value       = var.enable_validation ? aws_acm_certificate_validation.this[0].certificate_arn : aws_acm_certificate.this.arn
+  description = "ACM certificate ARN after DNS validation (or raw ARN if validation disabled)"
+}
+
+output "certificate_arn_for_cloudfront" {
+  value       = var.enable_validation ? aws_acm_certificate_validation.this[0].certificate_arn : aws_acm_certificate.this.arn
+  description = "ACM certificate ARN to use for CloudFront (validated when DNS validation is enabled)"
+}
+
 output "validation_records" {
   value = [
     for dvo in aws_acm_certificate.this.domain_validation_options : {

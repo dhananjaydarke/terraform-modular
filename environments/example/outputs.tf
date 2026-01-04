@@ -27,10 +27,6 @@ output "frontend_domain" {
   value       = module.static_site.distribution_domain
   description = "CloudFront distribution domain"
 }
-output "db_endpoint" {
-  value       = module.rds.endpoint
-  description = "RDS endpoint"
-}
 
 output "frontend_distribution_id" {
   value       = module.static_site.distribution_id
@@ -40,6 +36,11 @@ output "frontend_distribution_id" {
 output "frontend_api_base_url" {
   value       = "http://${module.lb.lb_dns_name}:${var.backend_port}/api"
   description = "API base URL for the frontend build"
+}
+
+output "db_endpoint" {
+  value       = module.rds.endpoint
+  description = "RDS endpoint"
 }
 
 output "db_port" {

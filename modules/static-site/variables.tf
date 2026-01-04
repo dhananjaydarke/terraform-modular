@@ -51,6 +51,12 @@ variable "aliases" {
   default     = []
 }
 
+variable "web_acl_id" {
+  description = "Optional WAFv2 Web ACL ID to associate with the CloudFront distribution."
+  type        = string
+  default     = ""
+}
+
 variable "tags" {
   description = "Common resource tags"
   type        = map(string)
