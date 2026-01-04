@@ -5,10 +5,20 @@ export REPO_NAME="students-db-seed"
 export ECR_REPO_URL="437147519305.dkr.ecr.us-east-1.amazonaws.com/${REPO_NAME}"
 
 export DB_PORT="5432"
-export DB_USER="students_admin"  
-export DB_PASSWORD="students_admin123$" 
 export DB_NAME="appdb"
 export DB_HOST="students-db.calmsi4iwo2e.us-east-1.rds.amazonaws.com"
+export SECRET_NAME="students-db-credentials"
+
+SECRET_JSON=$(aws secretsmanager get-secret-value \
+  --secret-id "$SECRET_NAME" \
+  --query SecretString \
+  --output text)
+
+export DB_USER=$(echo "$SECRET_JSON" | jq -r '.username')
+export DB_PASSWORD=$(echo "$SECRET_JSON" | jq -r '.password')
+
+
+
 #aws ecr create-repository --repository-name students-db-seed || true
 if aws ecr describe-repositories --repository-names "${REPO_NAME}" >/dev/null 2>&1; then
     echo "Repository '${REPO_NAME}' already exists."

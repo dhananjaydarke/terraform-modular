@@ -68,7 +68,7 @@ variable "db_password" {
 variable "use_db_secrets_manager" {
   description = "Store DB username/password in Secrets Manager and inject into ECS tasks"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "db_secret_name" {
@@ -169,7 +169,7 @@ variable "cloudfront_hosted_zone_id" {
 variable "enable_cloudfront_waf" {
   description = "Enable AWS WAFv2 Web ACL for the CloudFront distribution"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "cloudfront_waf_name" {

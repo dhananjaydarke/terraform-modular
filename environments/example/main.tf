@@ -102,6 +102,7 @@ module "ecs_roles" {
 resource "aws_secretsmanager_secret" "db_credentials" {
   count = var.use_db_secrets_manager ? 1 : 0
   name  = local.db_secret_name
+  force_delete            = true  
   tags  = local.common_tags
 }
 
