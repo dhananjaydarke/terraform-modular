@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1400" height="900" viewBox="0 0 1400 900" font-family="Arial, sans-serif">
+  <defs>
+    <style>
+      .title { font-size: 22px; font-weight: bold; }
+      .label { font-size: 14px; font-weight: bold; }
+      .small { font-size: 12px; }
+      .box { fill: #ffffff; stroke: #c7c7c7; stroke-width: 2; rx: 8; }
+      .vpc { fill: #f9f9f9; stroke: #7d7d7d; }
+      .arrow { stroke: #555; stroke-width: 2; marker-end: url(#arrowhead); fill: none; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#555" />
+    </marker>
+  </defs>
+
+  <text x="40" y="40" class="title">AWS Students App Architecture (CloudFront + ECS Fargate + RDS)</text>
+
+  <!-- VPC boundary -->
+  <rect x="30" y="90" width="1340" height="770" class="box vpc" />
+  <text x="50" y="115" class="label">VPC</text>
+
+  <!-- Edge layer -->
+  <image x="80" y="150" width="64" height="64" xlink:href="https://d1.awsstatic.com/architecture-diagrams/Architecture-Service-Icons_06072023/Arch_Amazon-CloudFront_64.svg" />
+  <text x="70" y="230" class="small">CloudFront</text>
+
+  <image x="200" y="150" width="64" height="64" xlink:href="https://d1.awsstatic.com/architecture-diagrams/Architecture-Service-Icons_06072023/Arch_AWS-WAF_64.svg" />
+  <text x="215" y="230" class="small">WAF</text>
+
+  <image x="300" y="150" width="64" height="64" xlink:href="https://d1.awsstatic.com/architecture-diagrams/Architecture-Service-Icons_06072023/Arch_Amazon-Route-53_64.svg" />
+  <text x="295" y="230" class="small">Route 53</text>
+
+  <image x="420" y="150" width="64" height="64" xlink:href="https://d1.awsstatic.com/architecture-diagrams/Architecture-Service-Icons_06072023/Arch_Amazon-Simple-Storage-Service_64.svg" />
+  <text x="425" y="230" class="small">S3 (frontend)</text>
+
+  <!-- API origin -->
+  <image x="620" y="150" width="64" height="64" xlink:href="https://d1.awsstatic.com/architecture-diagrams/Architecture-Service-Icons_06072023/Arch_Amazon-Elastic-Load-Balancing_64.svg" />
+  <text x="610" y="230" class="small">NLB</text>
+
+  <!-- ECS + RDS -->
+  <image x="760" y="300" width="64" height="64" xlink:href="https://d1.awsstatic.com/architecture-diagrams/Architecture-Service-Icons_06072023/Arch_Amazon-Elastic-Container-Service_64.svg" />
+  <text x="730" y="380" class="small">ECS Fargate</text>
+
+  <image x="920" y="300" width="64" height="64" xlink:href="https://d1.awsstatic.com/architecture-diagrams/Architecture-Service-Icons_06072023/Arch_Amazon-Relational-Database-Service_64.svg" />
+  <text x="900" y="380" class="small">RDS (Postgres)</text>
+
+  <!-- Supporting services -->
+  <image x="1080" y="300" width="64" height="64" xlink:href="https://d1.awsstatic.com/architecture-diagrams/Architecture-Service-Icons_06072023/Arch_AWS-Secrets-Manager_64.svg" />
+  <text x="1050" y="380" class="small">Secrets Manager</text>
+
+  <image x="760" y="470" width="64" height="64" xlink:href="https://d1.awsstatic.com/architecture-diagrams/Architecture-Service-Icons_06072023/Arch_Amazon-EventBridge_64.svg" />
+  <text x="735" y="550" class="small">EventBridge</text>
+
+  <image x="920" y="470" width="64" height="64" xlink:href="https://d1.awsstatic.com/architecture-diagrams/Architecture-Service-Icons_06072023/Arch_Amazon-Elastic-Container-Registry_64.svg" />
+  <text x="905" y="550" class="small">ECR</text>
+
+  <!-- Flows -->
+  <path d="M112 220 L150 220 L150 350 L740 350" class="arrow" />
+  <path d="M150 220 L450 220" class="arrow" />
+  <path d="M450 220 L450 260 L740 260" class="arrow" />
+  <path d="M650 220 L760 220 L760 300" class="arrow" />
+  <path d="M820 340 L920 340" class="arrow" />
+  <path d="M820 340 L1080 340" class="arrow" />
+  <path d="M792 470 L792 400" class="arrow" />
+  <path d="M952 470 L952 400" class="arrow" />
+
+  <text x="560" y="205" class="small">/api/*</text>
+  <text x="470" y="245" class="small">static assets</text>
+</svg>

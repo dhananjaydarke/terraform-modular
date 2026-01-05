@@ -100,10 +100,10 @@ module "ecs_roles" {
 }
 
 resource "aws_secretsmanager_secret" "db_credentials" {
-  count = var.use_db_secrets_manager ? 1 : 0
-  name  = local.db_secret_name
-  force_delete            = true  
-  tags  = local.common_tags
+  count                   = var.use_db_secrets_manager ? 1 : 0
+  name                    = local.db_secret_name
+  recovery_window_in_days = 0 # This ensures immediate deletion
+  tags                    = local.common_tags
 }
 
 resource "aws_secretsmanager_secret_version" "db_credentials" {
