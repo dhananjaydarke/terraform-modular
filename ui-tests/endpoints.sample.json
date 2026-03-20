@@ -1,0 +1,13 @@
+[
+  {
+    "name": "Home page",
+    "path": "/",
+    "expected_title_contains": "Example",
+    "expected_text": "Example Domain"
+  },
+  {
+    "name": "More information",
+    "path": "/more-information",
+    "expected_url_contains": "iana.org"
+  }
+]

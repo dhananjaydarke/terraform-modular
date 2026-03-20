@@ -13,6 +13,7 @@ This folder provides a composable Terraform layout that separates responsibiliti
 - `modules/rds`: RDS instance with subnet group and security group.
 - `modules/codebuild-backend`: CodeBuild project to build and push backend image to ECR.
 - `modules/codebuild-frontend`: CodeBuild project to build and deploy the frontend to S3/CloudFront.
+- `ui-tests`: Standalone Python/Selenium UI smoke test scaffold for validating a user-provided base URL and endpoint list.
 
 An example environment composition lives in `environments/example`, wiring these modules together for a backend API service, scheduled DB fetcher, and static site CDN.
 
